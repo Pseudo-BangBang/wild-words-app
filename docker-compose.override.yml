@@ -1,0 +1,67 @@
+# Development override for docker-compose.yml
+
+services:
+  # Override backend for development
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        sleep 15 &&
+        echo 'Running database migrations...' &&
+        pnpm run db:migrate &&
+        echo 'Seeding database...' &&
+        pnpm run db:seed &&
+        echo 'Starting development server...' &&
+        pnpm run dev
+      "
+
+  # Add phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: wildwords-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: wildwords_user
+      PMA_PASSWORD: wildwords_password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - wildwords-network
+    profiles:
+      - dev
+
+  # Capacitor development server (main frontend service)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.capacitor
+    container_name: wildwords-frontend-capacitor
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - wildwords-network
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/android
+      - /app/ios
+    command: pnpm run dev --host 0.0.0.0

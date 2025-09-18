@@ -1,0 +1,44 @@
+[mysqld]
+# Basic settings
+default-storage-engine = InnoDB
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# Performance tuning
+innodb-buffer-pool-size = 256M
+innodb-log-file-size = 64M
+innodb-flush-log-at-trx-commit = 2
+innodb-flush-method = O_DIRECT
+
+# Connection settings
+max-connections = 200
+max-connect-errors = 1000
+wait-timeout = 28800
+interactive-timeout = 28800
+
+# Query cache
+query-cache-type = 1
+query-cache-size = 32M
+query-cache-limit = 2M
+
+# Logging
+slow-query-log = 1
+slow-query-log-file = /var/lib/mysql/slow.log
+long-query-time = 2
+log-queries-not-using-indexes = 1
+
+# Binary logging
+log-bin = mysql-bin
+binlog-format = ROW
+expire-logs-days = 7
+max-binlog-size = 100M
+
+# Security
+local-infile = 0
+symbolic-links = 0
+
+[mysql]
+default-character-set = utf8mb4
+
+[client]
+default-character-set = utf8mb4

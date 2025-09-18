@@ -1,0 +1,110 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: wildwords-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wildwords_app
+      MYSQL_USER: wildwords_user
+      MYSQL_PASSWORD: wildwords_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - wildwords-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-prootpassword",
+        ]
+      timeout: 20s
+      retries: 10
+
+  # Backend API
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: wildwords-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: wildwords_user
+      DB_PASSWORD: wildwords_password
+      DB_NAME: wildwords_app
+      JWT_SECRET: your-super-secret-jwt-key-here
+      JWT_EXPIRES_IN: 7d
+    ports:
+      - "4000:4000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - wildwords-network
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        sleep 10 &&
+        echo 'Running database migrations...' &&
+        pnpm run db:migrate &&
+        echo 'Seeding database...' &&
+        pnpm run db:seed &&
+        echo 'Starting backend server...' &&
+        pnpm run start
+      "
+
+  # Development services (optional)
+  backend-dev:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: wildwords-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: wildwords_user
+      DB_PASSWORD: wildwords_password
+      DB_NAME: wildwords_app
+      JWT_SECRET: your-super-secret-jwt-key-here
+      JWT_EXPIRES_IN: 7d
+    ports:
+      - "4001:4000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - wildwords-network
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: pnpm run dev
+    profiles:
+      - dev
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  wildwords-network:
+    driver: bridge

@@ -1,0 +1,38 @@
+# Capacitor Development Dockerfile
+FROM node:20-alpine
+
+# Install system dependencies for Capacitor
+RUN apk add --no-cache \
+    openjdk11-jre \
+    gradle \
+    git \
+    curl \
+    bash \
+    && rm -rf /var/cache/apk/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies
+RUN pnpm install
+
+# Copy source code
+COPY . .
+
+# Build the app
+RUN pnpm run build
+
+# Sync with Capacitor
+RUN pnpm run cap:sync
+
+# Expose ports
+EXPOSE 3000 8100
+
+# Default command
+CMD ["pnpm", "run", "cap:serve"]

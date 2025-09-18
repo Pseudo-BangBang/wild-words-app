@@ -1,0 +1,35 @@
+{
+  "name": "wildwords-app",
+  "version": "1.0.0",
+  "description": "Wild Words - A demo app showcasing best practices with React, Apollo, and Knex",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:up": "./scripts/docker-dev.sh",
+    "dev:down": "./scripts/docker-clean.sh",
+    "dev:backend": "cd server && pnpm run dev",
+    "dev:frontend": "cd client && pnpm run dev",
+    "build": "pnpm run build:backend && pnpm run build:frontend",
+    "build:backend": "cd server && pnpm run build",
+    "build:frontend": "cd client && pnpm run build && npx cap sync",
+    "install:all": "pnpm install && cd server && pnpm install && cd ../client && pnpm install",
+    "db:migrate": "cd server && pnpm run db:migrate",
+    "db:seed": "cd server && pnpm run db:seed",
+    "db:reset": "cd server && pnpm run db:reset",
+    "cap:sync": "cd client && npx cap sync",
+    "cap:android": "cd client && npx cap open android",
+    "cap:ios": "cd client && npx cap open ios",
+    "cap:build": "cd client && pnpm run build && npx cap sync",
+    "cap:run:android": "cd client && npx cap run android",
+    "cap:run:ios": "cd client && npx cap run ios",
+    "cap:add": "cd client && npx cap add",
+    "cap:copy": "cd client && npx cap copy",
+    "cap:update": "cd client && npx cap update"
+  },
+  "keywords": ["react", "apollo", "knex", "graphql", "typescript", "demo"],
+  "author": "Demo App",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
