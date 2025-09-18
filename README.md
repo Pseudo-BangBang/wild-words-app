@@ -2,6 +2,11 @@
 
 A full-stack demo application showcasing modern web and mobile development practices. Features a React frontend with Tailwind CSS, Apollo GraphQL backend, and cross-platform mobile support with Capacitor.
 
+<div align="center">
+  <img src="screenshots/desktop.png" width="830" alt="Wild Words Desktop">
+  <img src="screenshots/ios-small.png" width="200" alt="Wild Words iOS">
+</div>
+
 ## 🚀 Features
 
 ### Backend (Apollo Server + Knex + TypeScript)
