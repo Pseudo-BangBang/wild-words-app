@@ -39,7 +39,7 @@ A full-stack demo application showcasing modern web and mobile development pract
 ## 🏗️ Architecture
 
 ```
-wildwords-app/
+wild-words-app/
 ├── server/                  # Apollo Server backend
 │   ├── src/
 │   │   ├── database/        # Database layer
@@ -131,7 +131,7 @@ wildwords-app/
 
 ```bash
 git clone <repository-url>
-cd wildwords-app
+cd wild-words-app
 
 # Copy environment configuration
 cp env.example .env
@@ -147,7 +147,7 @@ pnpm run dev:down
 
 ```bash
 git clone <repository-url>
-cd wildwords-app
+cd wild-words-app
 
 # Install dependencies
 pnpm run install:all
